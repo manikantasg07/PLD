@@ -1,6 +1,6 @@
-import bcrypt from "bcryptjs";
-import { prisma } from "..";
-import { z } from "zod";
+const bcrypt = require("bcryptjs");
+const { prisma } = require("../../prisma")
+const { z } = require("zod");
 
 const saltRounds=10;
 
@@ -28,21 +28,21 @@ async function hashPassword(password){
         
     }
 }
-
-export default async function signUp(req,res){
+async function signUp(req,res){
 
     try {
-
     const {firstname,lastname,email,username,password,confirmPassword} = req.body
 
     userSignUpSchema.parse({
         firstname,
         lastname,
+        username,
         email,
         password,
         confirmPassword
     })
     const hashedPassword = await hashPassword(password);
+    // console.log(Object.keys(prisma))
     const newUser=await prisma.users.create({
         data:{
             firstname,
@@ -56,10 +56,21 @@ export default async function signUp(req,res){
         user:newUser
     })
     } catch (error) {
+
+        if (error.code === "P2002") {
+            // P2002 indicates unique constraint violation
+            const target = error.meta.target ? error.meta.target.join(", ") : "field";
+            return res.status(400).json({
+              error: `A user with this ${target} already exists.`,
+            });
+        }
         console.log("Error creating data: ",error);
+        
         return res.status(500).json({
             error
         })
+        
     }
 }
 
+module.exports= signUp

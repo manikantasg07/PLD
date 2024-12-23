@@ -1,17 +1,12 @@
-import express from "express";
-import { PrismaClient } from "@prisma/client";
-import 'dotenv/config'
-import userRoutes from "./routes/users/userRoutes.js";
-
-
-export const prisma = new PrismaClient();
+var express =require("express");
+var dotenv =require("dotenv");
+dotenv.config()
+var userRoutes=require("./routes/users/userRoutes")
 const app = express();
 
 app.use(express.json());
 
 app.use("/users",userRoutes)
-
-
 
 
 app.listen(4000);

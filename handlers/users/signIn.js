@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const { z } = require("zod");
 const {prisma} = require("../../prisma");
+const {generateJWTToken}=require("./jwt")
 
 const signINuserSchema=z.object({
     username:z.string(),
@@ -26,7 +27,11 @@ async function signIn(req,res){
         if(!isMatch){
             return res.status(404).json({message:"Incorrect Password"})
         }
-        return res.status(200).json({message:"Succeffully Logged in"})
+        const jwttoken = generateJWTToken(username)
+        res.cookie("jwt",jwttoken,{
+            httpOnly: true,
+        })
+        return res.status(200).json({user})
     } catch (error) {
         
     }

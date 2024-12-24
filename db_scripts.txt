@@ -1,0 +1,11 @@
+CREATE SEQUENCE users_id_seq
+	START WITH 1;
+
+CREATE TABLE Users (
+	id INTEGER PRIMARY KEY DEFAULT nextval('users_id_seq'),
+	firstName VARCHAR(250) NOT NULL,
+	lastName VARCHAR(250) NOT NULL,
+	email VARCHAR(250) UNIQUE NOT NULL,
+	username VARCHAR(250) UNIQUE NOT NULL,
+	password VARCHAR(250) NOT NULL
+) 

@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const { prisma } = require("../../prisma")
 const { z } = require("zod");
+const {generateJWTToken}=require("./jwt")
 
 const saltRounds=10;
 
@@ -42,7 +43,6 @@ async function signUp(req,res){
         confirmPassword
     })
     const hashedPassword = await hashPassword(password);
-    // console.log(Object.keys(prisma))
     const newUser=await prisma.users.create({
         data:{
             firstname,
@@ -51,6 +51,11 @@ async function signUp(req,res){
             username,
             password:hashedPassword
         }
+    })
+    const jwttoken = generateJWTToken({username})
+    res.cookie("jwt",jwttoken,{
+        httpOnly: true,
+        signed:true
     })
     return res.status(200).json({
         user:newUser
@@ -69,7 +74,6 @@ async function signUp(req,res){
         return res.status(500).json({
             error
         })
-        
     }
 }
 

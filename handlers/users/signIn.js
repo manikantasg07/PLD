@@ -21,11 +21,11 @@ async function signIn(req,res){
             }
         })
         if(!user){
-            return res.status(404).json({message:"Incorrect Username"})
+            return res.status(404).send("Incorrect Username")
         }
         const isMatch = await bcrypt.compare(password,user.password)
         if(!isMatch){
-            return res.status(404).json({message:"Incorrect Password"})
+            return res.status(404).send("Incorrect Password")
         }
         const jwttoken = generateJWTToken(username)
         res.cookie("jwt",jwttoken,{
@@ -33,7 +33,8 @@ async function signIn(req,res){
         })
         return res.status(200).json({user})
     } catch (error) {
-        
+        console.log(error)
+        return res.status(500).send("Internal Server Error")
     }
 
 }

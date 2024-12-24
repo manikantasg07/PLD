@@ -43,7 +43,7 @@ async function signUp(req,res){
         confirmPassword
     })
     const hashedPassword = await hashPassword(password);
-    const newUser=await prisma.users.create({
+    const newUser = await prisma.users.create({
         data:{
             firstname,
             lastname,
@@ -55,25 +55,20 @@ async function signUp(req,res){
     const jwttoken = generateJWTToken({username})
     res.cookie("jwt",jwttoken,{
         httpOnly: true,
-        signed:true
     })
     return res.status(200).json({
         user:newUser
     })
     } catch (error) {
-
         if (error.code === "P2002") {
-            // P2002 indicates unique constraint violation
             const target = error.meta.target ? error.meta.target.join(", ") : "field";
-            return res.status(400).json({
-              error: `A user with this ${target} already exists.`,
-            });
+            return res.status(400).send(
+             `A user with this ${target} already exists.`,
+            );
         }
         console.log("Error creating data: ",error);
         
-        return res.status(500).json({
-            error
-        })
+        return res.status(500).send("internal Server Error")
     }
 }
 

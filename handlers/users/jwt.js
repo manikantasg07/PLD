@@ -6,6 +6,16 @@ function generateJWTToken(username){
     return token;
 }
 
+function verifyJWTToken(token){
+    try {
+        var decoded = jwt.verify(token, 'Manikanta');
+        return decoded.username
+      } catch(err) {
+        return false
+      }
+}
+
 module.exports={   
-    generateJWTToken
+    generateJWTToken,
+    verifyJWTToken
 }

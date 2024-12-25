@@ -1,7 +1,8 @@
 const bcrypt = require("bcryptjs");
 const { z } = require("zod");
 const {prisma} = require("../../prisma");
-const {generateJWTToken}=require("./jwt")
+const {generateJWTToken,verifyJWTToken}=require("./jwt");
+const jsonwebtoken = require("jsonwebtoken")
 
 const signINuserSchema=z.object({
     username:z.string(),
@@ -39,4 +40,23 @@ async function signIn(req,res){
 
 }
 
-module.exports = signIn
+async function isLoggedIn(req,res){
+    try {
+        const jwtToken=req.cookies["jwt"]
+        const result = verifyJWTToken(jwtToken);
+        if(!result){
+            return res.status(404).send("Not Logged In")
+        }
+        const user = await prisma.users.findUnique({
+            where:{
+                username:result
+            }
+        })
+        return res.status(200).json({user}) 
+    } catch (error) {
+        console.log("Error:",error);
+        return res.status(500).send("Internal Server Error")
+    }
+}
+
+module.exports = {signIn,isLoggedIn}

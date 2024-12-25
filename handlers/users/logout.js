@@ -4,7 +4,7 @@ function logout(req,res){
         httpOnly: true,
         signed:true
     })
-    return res.status(200).json({message:"Successfully Logged out"})
+    return res.status(200).send("Successfully Logged out")
 }
 
 module.exports=logout
